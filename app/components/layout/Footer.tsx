@@ -51,8 +51,8 @@ export default function Footer() {
         <div className="footer-bottom">
           <div className="footer-links">
             <a href="https://www.linkedin.com/in/agungsoeltani/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href="https://www.github.com/agungsoeltani" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="https://www.instagram.com/agungxsoeltani" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="https://github.com/katyhusaaa" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://www.instagram.com/ag300099/" target="_blank" rel="noopener noreferrer">Instagram</a>
           </div>
           
           <div className="visitor-counter">
