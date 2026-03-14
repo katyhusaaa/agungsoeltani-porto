@@ -32,7 +32,7 @@ export default function WeatherWidget() {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        const response = await fetch('https://agungsoeltani.netlify.app/.netlify/functions/cuaca');
+        const response = await fetch('/api/cuaca');
         if (!response.ok) throw new Error('Weather API response not OK');
         const data = await response.json();
         
