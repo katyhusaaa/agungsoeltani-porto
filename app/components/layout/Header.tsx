@@ -1,13 +1,11 @@
 // 1. IMPORT TARUH DI PALING ATAS
 import WeatherWidget from "@/app/components/ui/WeatherWidget";
-import DiscordPresence from "@/app/components/ui/Discordpresence";
 
 export default function Header() {
   return (
     <header className="main-header">
       <div className="header-content">
         
-        {/* 2. PANGGIL KOMPONENNYA KAYAK GINI */}
         <WeatherWidget />
 
         <nav className="main-nav">
