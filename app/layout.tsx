@@ -47,6 +47,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }),
           }}
         />
+        <link 
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" 
+          rel="stylesheet" 
+        />
         <link id="favicon" rel="icon" href="/images/favicon.ico" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" async></script>
       </head>
