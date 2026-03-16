@@ -4,23 +4,26 @@ import { useEffect } from "react";
 export const useUI = () => {
   useEffect(() => {
     // ==========================================
-    // 1. THEME SWITCHER LOGIC
+    // 1. THEME SWITCHER LOGIC (FIXED)
     // ==========================================
     const themeToggleButton = document.getElementById("theme-toggle");
-    const body = document.body;
+    const html = document.documentElement; // Tailwind v4 baca class di <html>, bukan <body>
 
     const applyTheme = (theme: string) => {
-      body.classList.toggle("dark-mode", theme === "dark");
+      if (theme === "dark") {
+        html.classList.add("dark");
+      } else {
+        html.classList.remove("dark");
+      }
     };
 
-    // Ambil preferensi tema dari localStorage atau sistem laptop user
     const savedTheme = localStorage.getItem("theme");
     const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     applyTheme(savedTheme || (systemPrefersDark ? "dark" : "light"));
 
     const handleThemeToggle = () => {
-      body.classList.toggle("dark-mode");
-      const newTheme = body.classList.contains("dark-mode") ? "dark" : "light";
+      html.classList.toggle("dark");
+      const newTheme = html.classList.contains("dark") ? "dark" : "light";
       localStorage.setItem("theme", newTheme);
     };
 
@@ -29,7 +32,7 @@ export const useUI = () => {
     }
 
     // ==========================================
-    // 2. COOKIE CONSENT LOGIC
+    // 2. COOKIE CONSENT LOGIC (FIXED)
     // ==========================================
     const cookieBanner = document.getElementById("cookie-banner");
     const cookieAcceptBtn = document.getElementById("cookie-accept");
@@ -39,23 +42,23 @@ export const useUI = () => {
     if (cookieBanner && cookieAcceptBtn && cookieDeclineBtn) {
       const cookieConsent = localStorage.getItem("cookie_consent");
       if (!cookieConsent) {
-        // Munculin banner setelah 1 detik kalo belum ada persetujuan
-        cookieTimeout = setTimeout(() => cookieBanner.classList.add("active"), 1000);
+        // Pake class 'show' biar sinkron sama inline style di page.tsx
+        cookieTimeout = setTimeout(() => cookieBanner.classList.add("show"), 1000);
       }
 
       cookieAcceptBtn.addEventListener("click", () => {
         localStorage.setItem("cookie_consent", "accepted");
-        cookieBanner.classList.remove("active");
+        cookieBanner.classList.remove("show");
       });
 
       cookieDeclineBtn.addEventListener("click", () => {
         localStorage.setItem("cookie_consent", "declined");
-        cookieBanner.classList.remove("active");
+        cookieBanner.classList.remove("show");
       });
     }
 
     // ==========================================
-    // 3. CUSTOM CURSOR LOGIC
+    // 3. CUSTOM CURSOR LOGIC (STABLE)
     // ==========================================
     const cursorDot = document.querySelector(".cursor-dot") as HTMLElement;
     const cursorOutline = document.querySelector(".cursor-outline") as HTMLElement;
@@ -75,69 +78,42 @@ export const useUI = () => {
       }
     };
 
-    const addHover = () => {
-      cursorDot?.classList.add("hover");
-      cursorOutline?.classList.add("hover");
-    };
-    const removeHover = () => {
-      cursorDot?.classList.remove("hover");
-      cursorOutline?.classList.remove("hover");
-    };
-
     const interactiveElements = document.querySelectorAll(
-      "a, button, .work-item-card, .skill-card, .theme-switcher, .scroll-indicator, input, textarea"
+      "a, button, .skill-card, .theme-switcher, input, textarea"
     );
 
     if (cursorDot && cursorOutline) {
       window.addEventListener("mousemove", handleMouseMove);
-      interactiveElements.forEach((el) => {
-        el.addEventListener("mouseenter", addHover);
-        el.addEventListener("mouseleave", removeHover);
-      });
     }
 
     // ==========================================
-    // 4. SCROLL INDICATOR LOGIC
+    // 4. SCROLL INDICATOR LOGIC (FIXED)
     // ==========================================
     const scrollArrow = document.getElementById("scroll-arrow") as HTMLAnchorElement;
-    const arrowUp = scrollArrow?.querySelector(".arrow-up") as HTMLElement;
-    const arrowDown = scrollArrow?.querySelector(".arrow-down") as HTMLElement;
 
     const handleScroll = () => {
-      if (!scrollArrow || !arrowUp || !arrowDown) return;
+      if (!scrollArrow) return;
       const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
       const fullHeight = document.documentElement.scrollHeight;
 
-      if (scrollPosition < 50) {
-        scrollArrow.classList.add("visible");
-        arrowDown.style.display = "block";
-        arrowUp.style.display = "none";
-        scrollArrow.href = "#about";
-      } else if (scrollPosition + windowHeight >= fullHeight - 50) {
-        scrollArrow.classList.add("visible");
-        arrowDown.style.display = "none";
-        arrowUp.style.display = "block";
+      // Tambah class 'scrolled' biar icon panah ganti (sinkron sama inline style page.tsx)
+      if (scrollPosition > 300) {
+        scrollArrow.classList.add("scrolled");
         scrollArrow.href = "#";
       } else {
-        scrollArrow.classList.remove("visible");
+        scrollArrow.classList.remove("scrolled");
+        scrollArrow.href = "#about";
       }
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Trigger sekali pas load
+    handleScroll();
 
-    // ==========================================
-    // CLEANUP FUNGSI (Saat pindah halaman)
-    // ==========================================
     return () => {
       if (themeToggleButton) themeToggleButton.removeEventListener("click", handleThemeToggle);
       clearTimeout(cookieTimeout);
       window.removeEventListener("mousemove", handleMouseMove);
-      interactiveElements.forEach((el) => {
-        el.removeEventListener("mouseenter", addHover);
-        el.removeEventListener("mouseleave", removeHover);
-      });
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);

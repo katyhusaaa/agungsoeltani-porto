@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+// Geist tetep disimpen kalau suatu saat butuh, tapi kita utamakan Satoshi
+import { Geist } from "next/font/google"; 
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Agung Soeltani - Network Engineer, IoT Developer & Cloud Enthusiast",
@@ -24,7 +29,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // Tambahin scroll-smooth biar animasi pindah menu di Header halus banget
+    // Tambahin 'dark' biar Shadcn langsung ngebaca ini tema gelap
+    <html lang="en" className={cn("dark scroll-smooth font-sans", geist.variable)}>
       <head>
         <script
           type="application/ld+json"
@@ -54,7 +61,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link id="favicon" rel="icon" href="/images/favicon.ico" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" async></script>
       </head>
-      <body>
+      
+      {/* Kasih class min-h-screen, bg-background, text-foreground, sama antialiased biar tulisan HD */}
+      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
         {children}
       </body>
     </html>

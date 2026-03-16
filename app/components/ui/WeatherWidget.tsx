@@ -1,8 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 
-// Karena SVG-nya string HTML, di React kita pakai dangerouslySetInnerHTML atau convert ke JSX.
-// Biar gampang dan persis sama kode lo, kita simpan mapping-nya di sini:
 const weatherIconMap: Record<string, string> = {
     '01d': '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>',
     '01n': '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>',
@@ -51,7 +49,6 @@ export default function WeatherWidget() {
     fetchWeather();
   }, []);
 
-  // Logic ganti kota tiap 6 detik
   useEffect(() => {
     if (status !== "success" || weatherData.length === 0) return;
 
@@ -59,12 +56,39 @@ export default function WeatherWidget() {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % weatherData.length);
     }, 6000);
 
-    return () => clearInterval(interval); // Cleanup interval biar ga bocor memorinya
+    return () => clearInterval(interval);
   }, [status, weatherData]);
 
-  if (status === "loading") return <span style={{ fontSize: '0.9em', color: 'var(--secondary-text-color)' }}>Loading...</span>;
-  if (status === "error") return <span style={{ fontSize: '0.9em', color: 'var(--secondary-text-color)' }}>Load failed</span>;
-  if (status === "na") return <span style={{ fontSize: '0.9em', color: 'var(--secondary-text-color)' }}>Data N/A</span>;
+  // --- BADGE CONTAINER (BUNGLEON) ---
+  const BadgeContainer = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
+    <div className={`flex items-center gap-2 px-3 py-1.5 bg-card/80 border border-border rounded-full shadow-sm transition-all duration-300 ${className}`}>
+      {children}
+    </div>
+  );
+
+  if (status === "loading") {
+    return (
+      <BadgeContainer className="animate-pulse">
+        <span className="text-xs font-medium text-muted-foreground tracking-wide">Fetching weather...</span>
+      </BadgeContainer>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <BadgeContainer>
+        <span className="text-xs font-medium text-red-500 tracking-wide">Weather load failed</span>
+      </BadgeContainer>
+    );
+  }
+
+  if (status === "na") {
+    return (
+      <BadgeContainer>
+        <span className="text-xs font-medium text-muted-foreground tracking-wide">Weather N/A</span>
+      </BadgeContainer>
+    );
+  }
 
   const currentCity = weatherData[currentIndex];
   const iconCode = String(currentCity?.icon);
@@ -73,13 +97,16 @@ export default function WeatherWidget() {
   const iconSvg = weatherIconMap[mappedIconCode] || weatherIconMap['01d'];
 
   return (
-    <div id="weather-widget">
-      <div className="weather-content">
-        <div className="weather-icon" dangerouslySetInnerHTML={{ __html: iconSvg }} />
-        <span className="weather-text">
-          {currentCity.kota} <strong>{currentCity.suhu}°C</strong>
+    <div key={currentIndex} className="animate-in fade-in duration-500">
+      <BadgeContainer className="hover:border-violet-500/30">
+        <div 
+          className="text-violet-500 [&>svg]:w-4 [&>svg]:h-4 [&>svg]:stroke-[2.5]" 
+          dangerouslySetInnerHTML={{ __html: iconSvg }} 
+        />
+        <span className="text-xs font-medium text-muted-foreground tracking-wide transition-colors duration-300">
+          {currentCity.kota} <strong className="text-foreground ml-1 font-semibold">{currentCity.suhu}°C</strong>
         </span>
-      </div>
+      </BadgeContainer>
     </div>
   );
 }
