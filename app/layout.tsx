@@ -3,6 +3,8 @@ import "./globals.css";
 // Geist tetep disimpen kalau suatu saat butuh, tapi kita utamakan Satoshi
 import { Geist } from "next/font/google"; 
 import { cn } from "@/lib/utils";
+// IMPORT PROVIDER BAHASA KITA DI SINI
+import { LanguageProvider } from "@/app/context/LanguageContext"; 
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -62,9 +64,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" async></script>
       </head>
       
-      {/* Kasih class min-h-screen, bg-background, text-foreground, sama antialiased biar tulisan HD */}
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
-        {children}
+      {/* Warna selection diubah ke ungu/violet biar match sama tema SaaS lo */}
+      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-violet-500/30 selection:text-violet-500">
+        
+        {/* BUNGKUS SELURUH WEB PAKAI LANGUAGE PROVIDER */}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+
       </body>
     </html>
   );
